@@ -15,10 +15,12 @@ class MeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-
+            'id' => $this['user']->id,
+            'name' => $this['user']->name,
+            'email' => $this['user']->email,
+            'token' => $this['token'],
+            'expires_in' => $this['expires_in'],
+            'token_type' => $this['token_type'],
         ];
     }
 }

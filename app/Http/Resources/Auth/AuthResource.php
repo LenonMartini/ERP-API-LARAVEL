@@ -14,7 +14,7 @@ class AuthResource extends JsonResource
             'name' => $this['user']->name,
             'email' => $this['user']->email,
             'token' => $this['token'],
-            'expires_at' => $this['expires_at'],
+            'expires_in' => $this['expires_in'],
             'token_type' => $this['token_type'],
         ];
     }

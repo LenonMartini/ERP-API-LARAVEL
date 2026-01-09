@@ -2,16 +2,28 @@
 
 
 namespace App\Services;
+use Illuminate\Auth\AuthenticationException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class MeService
 {
-    public function me(){
-        $auth = auth()->user();
-        if(!$auth){
-           throw new \Exception("User not authenticated", 401);
+    public function me(): array
+    {
+        if (! auth()->check()) {
+            throw new AuthenticationException('Unauthenticated user.');
         }
 
-        return $auth;
+        $user = auth()->user();
+
+        // Pega o token atual do header Authorization
+        $token = JWTAuth::getToken();
+        
+        return [
+            'user' => $user,
+            'token' => (string) $token,
+            'token_type' => 'Bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+        ];
     }
     public function rolesPermissions(){
         $auth = auth()->user();

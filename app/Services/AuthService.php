@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Exception;
 use Illuminate\Validation\ValidationException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService
 {
@@ -15,44 +15,35 @@ class AuthService
             'password' => $payload['password'],
         ];
 
-        if (! Auth::attempt($credentials)) {
+        if (! $token = auth()->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => ['Credenciais inválidas.'],
             ]);
         }
 
-        $user = Auth::user();
-
-        // 🔥 Revoga tokens antigos (opcional, mas recomendado)
-        $user->tokens()->delete();
-
-        // ⏳ Tempo de expiração (ex: 7 dias)
-        $expiresAt = Carbon::now()->addDays(7);
-
-         // 🔐 Cria token
-        $tokenResult = $user->createToken('auth_token');
-
-        // 🔥 Define expiração
-        $accessToken = $tokenResult->accessToken;
-        $accessToken->expires_at = $expiresAt;
-        $accessToken->save();
-
         return [
-            'user' => $user,
-            'token' => $tokenResult->plainTextToken, // ✅ SOMENTE ISSO
+            'user' => auth()->user(),
+            'token' => $token,
             'token_type' => 'Bearer',
-            'expires_at' => $expiresAt,
+            'expires_in' => auth()->factory()->getTTL() * 60, // segundos
         ];
     }
-    public function logout(): void
+
+   public function logout(): array
     {
-        $user = auth()->user();
-        if (!$user) {
-           throw new \Exception("User not authenticated", 401);
+        if (! auth()->check()) {
+            return [
+                'message' => 'Unauthenticated user.'
+            ];
         }
-        $user->tokens()->delete();
-        if ($user->currentAccessToken()) {
-            $user->currentAccessToken()->delete();
-        }
+
+        auth()->logout();
+
+        return [
+            'message' => 'Successfully logged out.'
+        ];
     }
+
+
+ 
 }

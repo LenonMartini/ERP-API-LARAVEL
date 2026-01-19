@@ -3,22 +3,22 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUuids;
-
+    use HasApiTokens, HasFactory, HasRoles, HasUuids, Notifiable;
 
     protected $guard_name = 'web';
+
     public $incrementing = false;   // 🔥 importante
+
     protected $keyType = 'string';
 
     /**
@@ -58,10 +58,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Tenant::class);
     }
+
     public function status()
     {
         return $this->belongsTo(Status::class);
     }
+
     public function permissionsTree(): array
     {
         return $this->getAllPermissions()
@@ -78,6 +80,7 @@ class User extends Authenticatable implements JWTSubject
             })
             ->toArray();
     }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -93,4 +96,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function preferences()
+    {
+        return $this->hasMany(UserPreference::class);
+    }
 }

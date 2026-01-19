@@ -9,21 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-     public function up(): void
+    public function up(): void
     {
         Schema::create('user_preferences', function (Blueprint $table) {
             $table->id();
             $table->uuid('user_id');
 
-            $table->string('theme')->default('light');
-            $table->string('language')->default('pt-BR');
+            $table->string('key');
+            $table->string('value');
 
             $table->timestamps();
 
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
 
             $table->unique('user_id');
         });

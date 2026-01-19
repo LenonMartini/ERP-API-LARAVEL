@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use Exception;
+use App\Models\User;
 use Illuminate\Validation\ValidationException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService
 {
@@ -20,30 +19,31 @@ class AuthService
                 'email' => ['Credenciais inválidas.'],
             ]);
         }
+        if (! auth()->user()) {
+            throw \Exception('User not authenticated', 401);
+        }
+        $user = User::with('preferences')->find(auth()->user()->id);
 
         return [
-            'user' => auth()->user(),
+            'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer',
             'expires_in' => auth()->factory()->getTTL() * 60, // segundos
         ];
     }
 
-   public function logout(): array
+    public function logout(): array
     {
         if (! auth()->check()) {
             return [
-                'message' => 'Unauthenticated user.'
+                'message' => 'Unauthenticated user.',
             ];
         }
 
         auth()->logout();
 
         return [
-            'message' => 'Successfully logged out.'
+            'message' => 'Successfully logged out.',
         ];
     }
-
-
- 
 }

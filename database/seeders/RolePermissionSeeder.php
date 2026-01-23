@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
@@ -19,49 +19,71 @@ class RolePermissionSeeder extends Seeder
 
         $permissionsMap = [
 
-            // ⚙️ CONFIGURAÇÕES DO SISTEMA
-            'configuracoes' => [
-                'usuarios' => ['visualizar', 'criar', 'atualizar', 'excluir'],
-                'tenants' => ['visualizar', 'criar', 'atualizar', 'excluir'],
-                'perfis' => ['visualizar', 'criar', 'atualizar', 'excluir'], // roles
+            // 🌍 SYSTEM (só usuário SYSTEM vê isso)
+            'system' => [
+                'users' => ['view', 'create', 'update', 'delete'],
+                'tenants' => ['view', 'create', 'update', 'delete'],
+                'roles' => ['view', 'create', 'update', 'delete'],
             ],
 
-            // 📋 CADASTROS GERAIS
-            'cadastros' => [
-                'produtos' => ['visualizar', 'criar', 'atualizar', 'excluir'],
-                'clientes' => ['visualizar', 'criar', 'atualizar', 'excluir'],
-                'fornecedores' => ['visualizar', 'criar', 'atualizar', 'excluir'],
-                'categorias' => ['visualizar', 'criar', 'atualizar', 'excluir'],
-            ],
+            // 🏢 TENANT (usuários do tenant)
+            'tenant' => [
 
-            // 🛒 COMPRAS
-            'compras' => [
-                'pedidos' => ['visualizar', 'criar', 'atualizar', 'aprovar', 'cancelar'],
-                'notas' => ['visualizar', 'criar', 'cancelar'],
-            ],
+                // 👤 Usuários do tenant
+                'users' => ['view', 'create', 'update', 'delete'],
 
-            // 💰 VENDAS
-            'vendas' => [
-                'pedidos' => ['visualizar', 'criar', 'atualizar', 'cancelar'],
-                'faturamento' => ['visualizar', 'fechar'],
-            ],
+                // 📋 Cadastros
+                'cadastros' => [
+                    'produtos' => ['view', 'create', 'update', 'delete'],
+                    'clientes' => ['view', 'create', 'update', 'delete'],
+                    'fornecedores' => ['view', 'create', 'update', 'delete'],
+                    'categorias' => ['view', 'create', 'update', 'delete'],
+                ],
 
-            // 🧾 PDV
-            'pdv' => [
-                'caixa' => ['abrir', 'fechar', 'sangria'],
-                'vendas' => ['criar', 'cancelar'],
+                // 🛒 Compras
+                'compras' => [
+                    'pedidos' => ['view', 'create', 'update', 'approve', 'cancel'],
+                    'notas' => ['view', 'create', 'cancel'],
+                ],
+
+                // 💰 Vendas
+                'vendas' => [
+                    'pedidos' => ['view', 'create', 'update', 'cancel'],
+                    'faturamento' => ['view', 'close'],
+                ],
+
+                // 🧾 PDV
+                'pdv' => [
+                    'caixa' => ['open', 'close', 'withdraw'],
+                    'vendas' => ['create', 'cancel'],
+                ],
             ],
         ];
 
-
         // 🔹 Criar permissões
-        foreach ($permissionsMap as $category => $modules) {
-            foreach ($modules as $module => $actions) {
-                foreach ($actions as $action) {
-                    Permission::firstOrCreate([
-                        'name' => "{$category}.{$module}.{$action}",
-                        'guard_name' => 'web',
-                    ]);
+        foreach ($permissionsMap as $scope => $modules) {
+            foreach ($modules as $module => $resources) {
+
+                // system.users.view
+                if (is_array($resources) && isset($resources[0])) {
+                    foreach ($resources as $action) {
+                        Permission::firstOrCreate([
+                            'name' => "{$scope}.{$module}.{$action}",
+                            'guard_name' => 'web',
+                        ]);
+                    }
+
+                    continue;
+                }
+
+                // tenant.cadastros.produtos.view
+                foreach ($resources as $resource => $actions) {
+                    foreach ($actions as $action) {
+                        Permission::firstOrCreate([
+                            'name' => "{$scope}.{$module}.{$resource}.{$action}",
+                            'guard_name' => 'web',
+                        ]);
+                    }
                 }
             }
         }
@@ -69,54 +91,45 @@ class RolePermissionSeeder extends Seeder
         // 🔹 Definição de ROLES (grupos de permissões)
         $roles = [
 
-            // 👑 SUPER ADMIN (tudo)
-            'super-admin' => Permission::all(),
+            // 👑 SYSTEM
+            'super-admin' => ['system.*.*'],
+            'admin-system' => ['system.*.*'],
 
-            // ⚙️ ADMINISTRADOR
-            'admin' => [
-                'config.users.*',
-                'config.roles.*',
-                'cadastros.*.*',
-                'compras.*.*',
-                'vendas.*.*',
-                'pdv.*.*',
-            ],
-
-            // 📊 GERENTE
+            // 🏢 TENANT
+            'admin-tenant' => ['tenant.*.*.*'],
             'manager' => [
-                'cadastros.*.*',
-                'compras.pedidos.view',
-                'compras.pedidos.approve',
-                'vendas.*.*',
-                'pdv.caixa.open',
-                'pdv.caixa.close',
+                'tenant.cadastros.*.*',
+                'tenant.compras.pedidos.view',
+                'tenant.vendas.*.*',
+                'tenant.pdv.caixa.open',
+                'tenant.pdv.caixa.close',
             ],
-
-            // 🧑 OPERADOR / PDV
             'operator' => [
-                'pdv.caixa.open',
-                'pdv.vendas.create',
-                'pdv.vendas.cancel',
+                'tenant.pdv.caixa.open',
+                'tenant.pdv.vendas.create',
+                'tenant.pdv.vendas.cancel',
             ],
         ];
 
-        foreach ($roles as $roleName => $permissionPatterns) {
+        foreach ($roles as $roleName => $patterns) {
+
             $role = Role::firstOrCreate([
                 'name' => $roleName,
                 'guard_name' => 'web',
             ]);
 
-            // Resolve curingas (*. *)
-            $resolvedPermissions = Permission::all()->filter(function ($permission) use ($permissionPatterns) {
-                foreach ($permissionPatterns as $pattern) {
+            $permissions = Permission::all()->filter(function ($permission) use ($patterns) {
+                foreach ($patterns as $pattern) {
                     if (fnmatch($pattern, $permission->name)) {
                         return true;
                     }
                 }
+
                 return false;
             });
 
-            $role->syncPermissions($resolvedPermissions);
+            $role->syncPermissions($permissions);
         }
+
     }
 }

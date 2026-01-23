@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services;
 
 use App\Models\Tenant;
@@ -10,61 +9,46 @@ class TenantService
 {
     public function getAll()
     {
-       $response = Tenant::all();
-       return $response;
-    }
-    public function getById(int $id)
-    {
-        $response = Tenant::find($id);
+        $response = Tenant::all();
+
         return $response;
     }
+
+    public function get(Tenant $tenant): Tenant
+    {
+        return $tenant;
+    }
+
+    /**
+     * Create a new tenant
+     *
+     * @param  array  $data  The tenant data
+     * @return Tenant The created tenant
+     */
     public function create(array $data)
     {
-        try {
-            DB::beginTransaction();
+        return DB::transaction(function () use ($data) {
             $tenant = Tenant::create($data);
-            if(!$tenant){
-                throw new \Exception('Error creating tenant');
-            }
-            $response = $this->getById($tenant->id);
-            DB::commit();
+            $tenant->refresh();
 
-            return $response;
-        } catch (\Exception $e) {
-            throw new \Exception('Error creating tenant: ' . $e->getMessage());
-        }
+            return $tenant;
+        });
     }
-    public function update(int $id, array $data)
+
+    public function update(Tenant $tenant, array $data): Tenant
     {
-        try {
-            DB::beginTransaction();
-            $tenant = Tenant::find($id);
-            if(!$tenant){
-                throw new \Exception('Tenant not found');
-            }
+        return DB::transaction(function () use ($tenant, $data) {
             $tenant->update($data);
-            $response = $this->getById($tenant->id);
-            DB::commit();
 
-            return $response;
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating tenant: ' . $e->getMessage());
-        }
+            // recarrega defaults / relations se necessário
+            return $tenant->refresh();
+        });
     }
-    public function delete(int $id)
-    {
-        try {
-            DB::beginTransaction();
-            $tenant = Tenant::find($id);
-            if(!$tenant){
-                throw new \Exception('Tenant not found');
-            }
-            $tenant->delete();
-            DB::commit();
 
-            return true;
-        } catch (\Exception $e) {
-            throw new \Exception('Error deleting tenant: ' . $e->getMessage());
-        }
+    public function delete(Tenant $tenant): void
+    {
+        DB::transaction(function () use ($tenant) {
+            $tenant->delete();
+        });
     }
 }

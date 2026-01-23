@@ -23,14 +23,16 @@ class TenantRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
+        $tenant = $this->route('tenant');
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'domain' => [
                 'required',
                 'string',
                 'max:255',
-                 Rule::unique('tenants', 'domain')
-                 ->ignore($this->route('id')),
+                Rule::unique('tenants', 'domain')
+                    ->ignore($this->route('tenant')?->id),
             ],
             'status' => [
                 $isUpdate ? 'required' : 'nullable',

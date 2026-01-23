@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\Request;
 
 class MeService
 {
-    public function me(): array
+    public function me(Request $request): array
     {
         if (! auth()->check()) {
             throw new AuthenticationException('Unauthenticated user.');
@@ -18,14 +18,13 @@ class MeService
 
         $user = User::with('preferences')->find($userAuth->id);
 
-        // Pega o token atual do header Authorization
-        $token = JWTAuth::getToken();
-
         return [
             'user' => $user,
-            'token' => (string) $token,
+            'token' => $request->bearerToken(),
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->availablePermissions()->pluck('name'),
             'token_type' => 'Bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
+            'expires_in' => auth()->factory()->getTTL() * 60, // segundos
         ];
     }
 

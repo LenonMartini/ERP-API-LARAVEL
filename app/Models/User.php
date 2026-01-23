@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -54,6 +55,21 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new TenantScope);
+    }
+
+    public function isSystem(): bool
+    {
+        return $this->type === 'SYSTEM';
+    }
+
+    public function isTenant(): bool
+    {
+        return $this->type === 'TENANT';
+    }
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
@@ -99,5 +115,23 @@ class User extends Authenticatable implements JWTSubject
     public function preferences()
     {
         return $this->hasMany(UserPreference::class);
+    }
+
+    /**
+     * Permissões que o usuário PODE VER/USAR
+     */
+    public function availablePermissions()
+    {
+        $permissions = $this->getAllPermissions();
+
+        if ($this->isSystem()) {
+            return $permissions->filter(
+                fn ($p) => str_starts_with($p->name, 'system.')
+            )->values();
+        }
+
+        return $permissions->filter(
+            fn ($p) => str_starts_with($p->name, 'tenant.')
+        )->values();
     }
 }

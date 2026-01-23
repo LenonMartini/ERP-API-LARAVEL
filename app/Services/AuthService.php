@@ -24,9 +24,12 @@ class AuthService
         }
         $user = User::with('preferences')->find(auth()->user()->id);
 
+        // Recuperar grupos e permissões de usuario
         return [
             'user' => $user,
             'token' => $token,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->availablePermissions()->pluck('name'),
             'token_type' => 'Bearer',
             'expires_in' => auth()->factory()->getTTL() * 60, // segundos
         ];

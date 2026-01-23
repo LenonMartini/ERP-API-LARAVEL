@@ -1,14 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MeController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MeController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
 
     Route::post('/login', [AuthController::class, 'login']);
 
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware(['tenant.context', 'auth:api'])->group(function () {
         Route::get('/me', [MeController::class, 'me']);
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/roles-permissions', [MeController::class, 'rolesPermissions']);

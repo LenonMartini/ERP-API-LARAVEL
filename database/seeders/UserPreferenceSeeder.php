@@ -14,6 +14,7 @@ class UserPreferenceSeeder extends Seeder
     public function run(): void
     {
         $user = User::first();
+
         DB::table('user_preferences')->insert([
             [
                 'user_id' => $user->id,
@@ -21,5 +22,6 @@ class UserPreferenceSeeder extends Seeder
                 'value' => 'dark',
             ],
         ]);
+
     }
 }

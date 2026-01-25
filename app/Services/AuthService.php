@@ -7,7 +7,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    public function login(array $payload): array
+    public function login(array $payload)
     {
         $credentials = [
             'email' => $payload['email'],
@@ -30,6 +30,7 @@ class AuthService
             'token' => $token,
             'roles' => $user->getRoleNames(),
             'permissions' => $user->availablePermissions()->pluck('name'),
+            'preferences' => $user->preferences,
             'token_type' => 'Bearer',
             'expires_in' => auth()->factory()->getTTL() * 60, // segundos
         ];

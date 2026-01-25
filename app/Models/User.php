@@ -117,6 +117,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserPreference::class);
     }
 
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class);
+    }
+
     /**
      * Permissões que o usuário PODE VER/USAR
      */

@@ -19,7 +19,11 @@ class DatabaseSeeder extends Seeder
             UserPreferenceSeeder::class,
             RolePermissionSeeder::class,
             SuperAdminSeeder::class,
-
+            TaxRegimeSeeder::class,
+            TenantBranchSeeder::class,
+            BranchFiscalSettingSeeder::class,
+            BranchUserSeeder::class,
+            BranchCertificateSeeder::class,
         ]);
     }
 }

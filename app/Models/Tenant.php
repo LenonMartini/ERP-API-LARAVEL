@@ -4,14 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tenant extends Model
 {
     use HasFactory;
+
     protected $table = 'tenants';
+
     protected $fillable = [
         'name',
         'domain',
         'status',
     ];
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'tenant_users',
+            'tenant_id',
+            'user_id'
+        )->withTimestamps();
+    }
 }

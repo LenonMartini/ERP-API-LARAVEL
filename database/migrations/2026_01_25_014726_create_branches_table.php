@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedBigInteger('tenant_id');
-            $table->unsignedBigInteger('status_id');
+
             // Regime tributário (CRT)
             $table->unsignedBigInteger('crt_id');
 
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('cnpj', 14)->unique();
             $table->string('state_registration'); // IE
             $table->string('municipal_registration')->nullable(); // IM
+            $table->string('status')->default('ACTIVE');
 
             // Endereço (SEFAZ)
             $table->string('zip_code', 8);
@@ -45,7 +46,7 @@ return new class extends Migration
             $table->unique(['tenant_id', 'code']);
 
             $table->foreign('tenant_id')->references('id')->on('tenants');
-            $table->foreign('status_id')->references('id')->on('statuses');
+
             $table->foreign('crt_id')->references('id')->on('tax_regimes');
         });
 

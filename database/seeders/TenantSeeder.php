@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class TenantSeeder extends Seeder
 {
@@ -17,14 +16,14 @@ class TenantSeeder extends Seeder
             [
                 'name' => 'Tenant A',
                 'domain' => 'tenant-a.example.com',
-                'status' => 'active',
+                'status' => 'ACTIVE',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Tenant B',
                 'domain' => 'tenant-b.example.com',
-                'status' => 'active',
+                'status' => 'ACTIVE',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

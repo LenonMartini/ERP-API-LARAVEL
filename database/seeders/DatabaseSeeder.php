@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             TenantSeeder::class,
             StatusSeeder::class,
             UserSeeder::class,
+            TenantUserSeeder::class,
             UserPreferenceSeeder::class,
             RolePermissionSeeder::class,
             SuperAdminSeeder::class,
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
             BranchFiscalSettingSeeder::class,
             BranchUserSeeder::class,
             BranchCertificateSeeder::class,
+            MenuSeeder::class,
         ]);
     }
 }

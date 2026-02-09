@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Status;
-use App\Models\Tenant;
+use App\Enum\StatusEnum;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -13,63 +12,58 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $status = Status::first();
-        $tenant = Tenant::first(); // tenant criado no seed anterior
-        DB::table('users')->insert(
+
+        // SYSTEM USER
+        User::updateOrCreate(
+            ['email' => 'suporte@gmail.com'],
             [
                 'id' => (string) Str::uuid(),
-                'tenant_id' => null,
-                'status_id' => $status->id,
-                'name' => 'Suporte',
-                'email' => 'suporte@gmail.com',
+                'status' => StatusEnum::ACTIVE->value,
+                'name' => 'Suporte Sistema',
                 'type' => 'SYSTEM',
                 'password' => Hash::make('@suporte'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ]
         );
 
-        DB::table('users')->insert([
-            // SYSTEM
-
-            // TENANT ADMIN
+        // TENANT USERS
+        $users = [
             [
-                'id' => (string) Str::uuid(),
-                'tenant_id' => $tenant->id,
-                'status_id' => $status->id,
-                'name' => 'Admin Empresa',
-                'email' => 'admin@empresa.com',
+                'name' => 'Admin Tenant A',
+                'email' => 'suporte1@empresa.com',
                 'type' => 'TENANT',
-                'password' => Hash::make('@admin'),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'password' => '@suporte',
             ],
-
-            // TENANT USER
             [
-                'id' => (string) Str::uuid(),
-                'tenant_id' => $tenant->id,
-                'status_id' => $status->id,
-                'name' => 'Usuário Filial',
-                'email' => 'user@empresa.com',
+                'name' => 'Usuário Tenant A',
+                'email' => 'userA@empresa.com',
                 'type' => 'TENANT',
-                'password' => Hash::make('@user'),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'password' => '@user',
             ],
-
-            // TENANT USER
             [
-                'id' => (string) Str::uuid(),
-                'tenant_id' => $tenant->id,
-                'status_id' => $status->id,
-                'name' => 'Usuário Filial2',
-                'email' => 'user2@empresa.com',
+                'name' => 'Admin Tenant B',
+                'email' => 'suporteB@empresa.com',
                 'type' => 'TENANT',
-                'password' => Hash::make('@user'),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'password' => '@suporte',
             ],
-        ]);
+            [
+                'name' => 'Usuário Tenant B',
+                'email' => 'userB@empresa.com',
+                'type' => 'TENANT',
+                'password' => '@user',
+            ],
+        ];
+
+        foreach ($users as $data) {
+            User::updateOrCreate(
+                ['email' => $data['email']],
+                [
+                    'id' => (string) Str::uuid(),
+                    'status' => StatusEnum::ACTIVE->value,
+                    'name' => $data['name'],
+                    'type' => $data['type'],
+                    'password' => Hash::make($data['password']),
+                ]
+            );
+        }
     }
 }

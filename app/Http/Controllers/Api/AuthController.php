@@ -19,7 +19,7 @@ class AuthController extends Controller
         /*return response()->json(
             $response
         );*/
-
+        // return $response;
         return new AuthResource($response);
     }
 

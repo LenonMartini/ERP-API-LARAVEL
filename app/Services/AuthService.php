@@ -22,7 +22,11 @@ class AuthService
         if (! auth()->user()) {
             throw \Exception('User not authenticated', 401);
         }
-        $user = User::with('preferences')->find(auth()->user()->id);
+        $user = User::with('tenants')->with('preferences')->find(auth()->user()->id);
+
+        if (! $user) {
+            throw \Exception('User not found', 404);
+        }
 
         // Recuperar grupos e permissões de usuario
         return [

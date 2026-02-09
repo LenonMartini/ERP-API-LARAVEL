@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -70,9 +71,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->type === 'TENANT';
     }
 
-    public function tenant()
+    public function tenants(): BelongsToMany
     {
-        return $this->belongsTo(Tenant::class);
+        return $this->belongsToMany(
+            Tenant::class,
+            'tenant_users',
+            'user_id',
+            'tenant_id'
+        )->withTimestamps();
     }
 
     public function status()

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enum\StatusEnum;
 use App\Models\Branch;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
@@ -15,7 +16,7 @@ class TenantBranchSeeder extends Seeder
         // MATRIZ
         $matriz = Branch::create([
             'tenant_id' => $tenant->id,
-            'status_id' => 1,
+            'status' => StatusEnum::ACTIVE->value,
             'name' => 'Empresa Exemplo LTDA',
             'trade_name' => 'Empresa Exemplo',
             'code' => '0001',
@@ -36,7 +37,7 @@ class TenantBranchSeeder extends Seeder
         // FILIAL 01
         $filial01 = Branch::create([
             'tenant_id' => $tenant->id,
-            'status_id' => 1,
+            'status' => StatusEnum::ACTIVE->value,
             'name' => 'Empresa Exemplo Filial SP',
             'trade_name' => 'Empresa Exemplo SP',
             'code' => '0002',
@@ -57,7 +58,7 @@ class TenantBranchSeeder extends Seeder
         // FILIAL 02
         $filial02 = Branch::create([
             'tenant_id' => $tenant->id,
-            'status_id' => 1,
+            'status' => StatusEnum::ACTIVE->value,
             'name' => 'Empresa Exemplo Filial SC',
             'trade_name' => 'Empresa Exemplo SC',
             'code' => '0003',

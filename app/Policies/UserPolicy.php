@@ -16,52 +16,63 @@ class UserPolicy
         return $user->type === 'TENANT';
     }
 
-    /**
-     * Listar usuários
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | LIST
+    |--------------------------------------------------------------------------
+    */
+
     public function viewAny(User $authUser): bool
     {
-        return $this->isSystem($authUser) || $this->isTenant($authUser);
+        return true;
     }
 
-    /**
-     * Ver usuário específico
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | VIEW
+    |--------------------------------------------------------------------------
+    */
+
     public function view(User $authUser, User $targetUser): bool
     {
-        // SYSTEM vê tudo
+        // 🔵 SYSTEM só vê SYSTEM
         if ($this->isSystem($authUser)) {
-            return true;
+            return $targetUser->type === 'SYSTEM';
         }
 
-        // TENANT nunca vê SYSTEM
+        // 🟢 TENANT nunca vê system
         if ($targetUser->type === 'SYSTEM') {
             return false;
         }
 
-        // TENANT só vê do próprio tenant
         return $authUser->tenant_id === $targetUser->tenant_id;
     }
 
-    /**
-     * Criar usuário
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
+
     public function create(User $authUser): bool
     {
-        return $this->isSystem($authUser) || $this->isTenant($authUser);
+        return true;
     }
 
-    /**
-     * Atualizar usuário
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
+
     public function update(User $authUser, User $targetUser): bool
     {
-        // SYSTEM pode tudo
+        // SYSTEM só altera SYSTEM
         if ($this->isSystem($authUser)) {
-            return true;
+            return $targetUser->type === 'SYSTEM';
         }
 
-        // TENANT nunca altera SYSTEM
+        // TENANT nunca altera system
         if ($targetUser->type === 'SYSTEM') {
             return false;
         }
@@ -69,9 +80,12 @@ class UserPolicy
         return $authUser->tenant_id === $targetUser->tenant_id;
     }
 
-    /**
-     * Excluir usuário
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE
+    |--------------------------------------------------------------------------
+    */
+
     public function delete(User $authUser, User $targetUser): bool
     {
         return $this->update($authUser, $targetUser);

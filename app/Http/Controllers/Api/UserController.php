@@ -17,6 +17,7 @@ class UserController extends Controller
 
     public function index()
     {
+
         $this->authorize('viewAny', User::class);
         $response = $this->userService->findAll();
 

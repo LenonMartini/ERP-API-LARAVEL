@@ -9,5 +9,5 @@ class Menu extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['parent_id', 'name', 'route', 'icon', 'order', 'type', 'permission_name'];
+    protected $fillable = ['parent_id', 'name', 'url', 'icon', 'order', 'type', 'permission_name'];
 }

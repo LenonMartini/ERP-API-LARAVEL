@@ -54,4 +54,9 @@ class AuthService
             'message' => 'Successfully logged out.',
         ];
     }
+
+    public function getUserAuth()
+    {
+        return auth()->user();
+    }
 }

@@ -14,24 +14,35 @@ class TenantScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        // Contexto ainda não pronto (login, seed, console)
+
         if (! TenantContext::ready()) {
             return;
         }
 
-        // SYSTEM vê tudo
+        $table = $model->getTable();
+
+        // 🔵 SYSTEM logado
         if (TenantContext::isSystem()) {
+
+            if ($model instanceof \App\Models\User) {
+                $builder->where($table.'.type', 'SYSTEM');
+            }
+
             return;
         }
 
-        // Sem tenant
-        if (! TenantContext::tenantId()) {
-            return;
+        // 🟢 TENANT logado
+        if (TenantContext::tenantId()) {
+
+            if ($model instanceof \App\Models\User) {
+                $builder->where($table.'.type', 'TENANT');
+            }
+
+            $builder->where(
+                $table.'.tenant_id',
+                TenantContext::tenantId()
+            );
         }
 
-        $builder->where(
-            $model->getTable().'.tenant_id',
-            TenantContext::tenantId()
-        );
     }
 }

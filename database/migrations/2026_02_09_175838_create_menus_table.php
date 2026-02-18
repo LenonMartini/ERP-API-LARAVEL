@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained('menus')
                 ->nullOnDelete();
             $table->string('name');
-            $table->string('route')->nullable();
+            $table->string('url')->nullable();
             $table->string('icon')->nullable();
             $table->integer('order');
             $table->enum('type', ['SYSTEM', 'TENANT', 'BOTH'])->default('TENANT');

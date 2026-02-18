@@ -16,6 +16,7 @@ class SetTenantContext
      */
     public function handle($request, Closure $next)
     {
+
         if (Auth::guard('api')->check()) {
             $user = Auth::guard('api')->user();
 

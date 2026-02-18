@@ -9,23 +9,19 @@ class MenuSeeder extends Seeder
 {
     public function run(): void
     {
-        // =====================
-        // DASHBOARD
-        // =====================
-        $dashboard = Menu::updateOrCreate(
-            ['route' => 'dashboard'],
+        // ================= DASHBOARD
+        Menu::updateOrCreate(
+            ['url' => '/painel'],
             [
                 'name' => 'Dashboard',
                 'icon' => 'mdi-view-dashboard',
                 'order' => 1,
                 'type' => 'BOTH',
-                'permission_name' => 'view dashboard',
+                'permission_name' => null,
             ]
         );
 
-        // =====================
-        // CADASTROS (GRUPO)
-        // =====================
+        // ================= CADASTROS (TENANT)
         $cadastros = Menu::updateOrCreate(
             ['name' => 'Cadastros', 'parent_id' => null],
             [
@@ -36,18 +32,14 @@ class MenuSeeder extends Seeder
             ]
         );
 
-        $this->child($cadastros, 'Status', 'status.index', 'mdi-flag', 1, 'manage status');
-        $this->child($cadastros, 'Categorias', 'categories.index', 'mdi-shape', 2, 'manage categories');
-        $this->child($cadastros, 'Clientes', 'clients.index', 'mdi-account-group', 3, 'manage clients');
-        $this->child($cadastros, 'Fornecedores', 'suppliers.index', 'mdi-truck', 4, 'manage suppliers');
-        $this->child($cadastros, 'Produtos', 'products.index', 'mdi-package-variant', 5, 'manage products');
-        $this->child($cadastros, 'Unidades', 'units.index', 'mdi-office-building', 6, 'manage units');
-        $this->child($cadastros, 'Formas de Pagamento', 'payment-methods.index', 'mdi-credit-card', 7, 'manage payment methods');
-        $this->child($cadastros, 'Condições de Pagamento', 'payment-terms.index', 'mdi-calendar-clock', 8, 'manage payment terms');
+        $this->child($cadastros, 'Status', '/cadastros/status', 'mdi-flag', 1, 'tenant.cadastros.status.view', 'TENANT');
+        $this->child($cadastros, 'Categorias', '/cadastros/categorias', 'mdi-shape', 2, 'tenant.cadastros.categorias.view', 'TENANT');
+        $this->child($cadastros, 'Clientes', '/cadastros/clientes', 'mdi-account-group', 3, 'tenant.cadastros.clientes.view', 'TENANT');
+        $this->child($cadastros, 'Fornecedores', '/cadastros/fornecedores', 'mdi-truck', 4, 'tenant.cadastros.fornecedores.view', 'TENANT');
+        $this->child($cadastros, 'Produtos', '/cadastros/produtos', 'mdi-package-variant', 5, 'tenant.cadastros.produtos.view', 'TENANT');
+        $this->child($cadastros, 'Unidades', '/cadastros/unidades', 'mdi-office-building', 6, 'tenant.cadastros.unidades.view', 'TENANT');
 
-        // =====================
-        // CONFIGURAÇÕES (GRUPO)
-        // =====================
+        // ================= CONFIG
         $config = Menu::updateOrCreate(
             ['name' => 'Configurações', 'parent_id' => null],
             [
@@ -58,30 +50,34 @@ class MenuSeeder extends Seeder
             ]
         );
 
-        $this->child($config, 'Empresas', 'tenants.index', 'mdi-domain', 1, 'manage tenants');
-        $this->child($config, 'Usuários', 'users.index', 'mdi-account-multiple', 2, 'manage users');
-        $this->child($config, 'Permissões', 'permissions.index', 'mdi-shield-key', 3, 'manage permissions');
-        $this->child($config, 'Sistema', 'system.settings', 'mdi-cogs', 4, 'manage system');
+        // 🔵 SYSTEM
+        $this->child($config, 'Empresas', '/config/empresas', 'mdi-domain', 1, 'system.tenants.view', 'SYSTEM');
+        $this->child($config, 'Sistema', '/config/sistema', 'mdi-cogs', 3, 'system.settings.view', 'SYSTEM');
+
+        // 🟢 TENANT
+        $this->child($config, 'Usuários', '/config/usuarios', 'mdi-account-multiple', 4, 'tenant.users.view', 'TENANT');
+        $this->child($config, 'Permissões', '/config/permissoes', 'mdi-shield-key', 2, 'tenant.roles.view', 'TENANT');
     }
 
     private function child(
         Menu $parent,
         string $name,
-        string $route,
+        string $url,
         string $icon,
         int $order,
-        ?string $permission
+        ?string $permission,
+        string $type
     ): void {
         Menu::updateOrCreate(
             [
-                'route' => $route,
+                'url' => $url,
                 'parent_id' => $parent->id,
             ],
             [
                 'name' => $name,
                 'icon' => $icon,
                 'order' => $order,
-                'type' => $parent->type,
+                'type' => $type,
                 'permission_name' => $permission,
             ]
         );

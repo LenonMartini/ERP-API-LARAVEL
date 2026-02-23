@@ -7,6 +7,7 @@ require __DIR__.'/tenant/tenant.php';
 require __DIR__.'/preference/preference.php';
 require __DIR__.'/user/user.php';
 require __DIR__.'/menu/menu.php';
+require __DIR__.'/status/status.php';
 
 Route::get('ping', function () {
     return response()->json(['message' => 'pong'], 200);

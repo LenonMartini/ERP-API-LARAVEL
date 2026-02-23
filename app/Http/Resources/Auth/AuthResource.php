@@ -25,9 +25,9 @@ class AuthResource extends JsonResource
             'tenant' => TenantResource::collection($this['user']->tenants),
             'preferences' => UserPreferenceResource::collection($this['user']->preferences),
             // ✅ usa o resource dedicado
-            'roles' => RolePermissionResource::collection(
+            /*'roles' => RolePermissionResource::collection(
                 $user->roles
-            ),
+            ),*/
             'expires_in' => $this['expires_in'],
             'token_type' => $this['token_type'],
         ];

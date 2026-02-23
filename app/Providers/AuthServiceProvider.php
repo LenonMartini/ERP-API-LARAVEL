@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Policies\StatusPolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -19,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         User::class => UserPolicy::class,
         Tenant::class => TenantPolicy::class,
+        Status::class => StatusPolicy::class,
     ];
 
     /**

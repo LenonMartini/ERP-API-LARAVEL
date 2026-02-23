@@ -33,7 +33,7 @@ class AuthService
             'user' => $user,
             'token' => $token,
             'roles' => $user->getRoleNames(),
-            'permissions' => $user->availablePermissions()->pluck('name'),
+            // 'permissions' => $user->availablePermissions()->pluck('name'),
             'preferences' => $user->preferences,
             'token_type' => 'Bearer',
             'expires_in' => auth()->factory()->getTTL() * 60, // segundos
@@ -57,6 +57,20 @@ class AuthService
 
     public function getUserAuth()
     {
-        return auth()->user();
+        $tenant = auth()->user()->tenants()->first();
+
+        return [
+            'user' => [
+                'id' => auth()->user()->id,
+                'name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+            ],
+            'tenant' => [
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+            ],
+        ];
+
+        // return auth()->user();
     }
 }

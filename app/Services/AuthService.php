@@ -64,6 +64,7 @@ class AuthService
                 'id' => auth()->user()->id,
                 'name' => auth()->user()->name,
                 'email' => auth()->user()->email,
+                'type' => auth()->user()->type,
             ],
             'tenant' => [
                 'id' => $tenant->id,

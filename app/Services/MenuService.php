@@ -10,7 +10,9 @@ class MenuService
 
     public function findAll()
     {
-        $user = $this->authService->getUserAuth();
+        $user = auth()->user();
+
+
 
         $types = $user->type === 'SYSTEM'
             ? ['SYSTEM', 'BOTH']
@@ -43,14 +45,16 @@ class MenuService
 
     private function formatTree($grouped, $parentId)
     {
+
+        $user = auth()->user();
         return collect($grouped[$parentId] ?? [])
             ->sortBy('order')
-            ->map(function ($menu) use ($grouped) {
+            ->map(function ($menu) use ($grouped, $user) {
 
                 $children = $this->formatTree($grouped, $menu->id);
 
                 if ($menu->permission_name) {
-                    if (! $this->authService->getUserAuth()->can($menu->permission_name)) {
+                    if (! $user->can($menu->permission_name)) {
                         return null;
                     }
                 }

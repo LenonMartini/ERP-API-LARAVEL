@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Dto\Status\CreateStatusDto;
+use App\Dto\Status\UpdateStatusDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Status\StatusRequest;
 use App\Models\Status;
-use App\Services\StatusService;
+use App\Services\Status\StatusService;
 
 class StatusController extends Controller
 {
@@ -38,8 +40,30 @@ class StatusController extends Controller
     {
 
         $this->authorize('create', Status::class);
-        $response = $this->statusService->create($request->validated());
+        $input = $request->validated();
+        $dto = new CreateStatusDto(
+            name: $input['name']
+        );
+        $response = $this->statusService->create($dto);
 
         return response()->json($response);
+    }
+    public function update(StatusRequest $request, Status $status)
+    {
+        $this->authorize('update', $status);
+        $input = $request->validated();
+        $dto = new UpdateStatusDto(
+            name: $input['name']
+        );
+        $response = $this->statusService->update($status, $dto);
+
+        return response()->json($response);
+    }
+    public function destroy(Status $status){
+        $this->authorize('delete', $status);
+
+        $this->statusService->delete($status);
+
+        return response()->noContent(); // 204
     }
 }

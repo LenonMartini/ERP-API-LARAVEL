@@ -12,3 +12,9 @@ require __DIR__.'/status/status.php';
 Route::get('ping', function () {
     return response()->json(['message' => 'pong'], 200);
 });
+
+
+
+
+
+require __DIR__.'/product/product.php';

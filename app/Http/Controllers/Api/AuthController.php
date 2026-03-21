@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\AuthRequest;
 use App\Http\Resources\Auth\AuthResource;
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
 
 class AuthController extends Controller
 {

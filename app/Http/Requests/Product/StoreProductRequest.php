@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Status;
+namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StatusRequest extends FormRequest
+class StoreProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,16 +21,8 @@ class StatusRequest extends FormRequest
      */
     public function rules(): array
     {
-        $tenantId = auth()->user()->tenant_id;
-
         return [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('statuses', 'name')
-                    ->where('tenant_id', $tenantId)
-                    ->ignore($this->route('status')?->id),
-            ],
+            //
         ];
     }
 }

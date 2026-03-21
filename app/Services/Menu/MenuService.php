@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Menu;
 
 use App\Models\Menu;
+use App\Services\Auth\AuthService;
 
 class MenuService
 {
